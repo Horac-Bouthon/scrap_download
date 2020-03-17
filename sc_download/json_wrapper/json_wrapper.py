@@ -33,7 +33,7 @@ class JsonWrapper:
         self.string = string
         self.header = dict()
         self.dict = dict()
-        self.logger.info('Create: {}'.format(repr(self)))
+        self.logger.debug('Create: {}'.format(repr(self)))
 
     def __repr__(self):
         return "JsonWrapper('{}')"\

@@ -21,7 +21,7 @@ class CronWrapper:
         self.logger = logging.getLogger(cron_wrapper.LOGGER_NAME)
         self.cron_text = cron_text
         self.action = action
-        self.logger.info('Create: {}'.format(repr(self)))
+        self.logger.debug('Create: {}'.format(repr(self)))
 
     def crontab_get_string(self):
         """ Modify to set cron command """

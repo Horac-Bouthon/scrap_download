@@ -19,7 +19,7 @@ class CrawlerObject:
         self.code = code
         self.description = description
         self.kind = kind
-        self.logger.info('Create: {}'.format(repr(self)))
+        self.logger.debug('Create: {}'.format(repr(self)))
 
     @staticmethod
     def headers_csv_dict():

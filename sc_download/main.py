@@ -21,8 +21,8 @@ in_args.add_argument('-t', '--crontab', help='List configured cron table', actio
 in_args.add_argument('-v', '--verbose', help='Verbose output', action='store_true')
 in_args.add_argument('-ll', '--log_level', help='Set log level for this run.',
                      choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
-in_args.add_argument('-s', '--api_send', help='Type of API send: batch or one by one .',
-                     choices=['BATCH', 'ONE_BY_ONE'])
+# in_args.add_argument('-s', '--api_send', help='Type of API send: batch or one by one .',
+#                     choices=['BATCH', 'ONE_BY_ONE'])
 akt_args = in_args.parse_args()
 
 lw = LoggerWrapper()
@@ -58,22 +58,16 @@ def crawl():
     ini_obj = IniWrapper(str_config)
     ini_obj.read_data()
 
-    if akt_args.api_send:
-        str_api = akt_args.api_send
-    elif 'ApiType' in ini_obj.data:
-        str_api = ini_obj.data['ApiType']
-    else:
-        str_api = 'BATCH'
-
     if 'down_sites' in ini_obj.data:
         # download - parse - send
         for site_url in ini_obj.data['down_sites']:
-            print('site url = {}'.format(site_url))
             direct = HttpConverter()
             direct.work_file = ini_obj.data['work_file']
             direct.load_site(site_url)
             py_touch(direct.work_file)
             file_name = direct.st_download_file()
+            logger.info("File {} downloaded from site {}..."\
+                        .format(ini_obj.data['work_file'], site_url))
             # read xlsx
             xslx_obj = XlsxWrapper(file_name)
             xslx_obj.read_file(6)
@@ -88,6 +82,9 @@ def crawl():
                 else:
                     co.kind = line[3]
                 katalog.append(co.to_json_dict())
+            xslx_obj.close_and_free()
+            logger.info("File {} parsed..."
+                        .format(ini_obj.data['work_file']))
 
             # --------------- extension file
             ext_file = ini_obj.data['extension_file']
@@ -104,13 +101,16 @@ def crawl():
                     else:
                         co.kind = line[3]
                     katalog.append(co.to_json_dict())
+                logger.info("File {} parsed..."
+                            .format(ini_obj.data['extension_file']))
 
             json_obj = JsonWrapper.from_none()
             json_obj.dict[ini_obj.data['JsonMainKey']] = katalog
             a_w = ApiWrapper(ini_obj.data['ApiUrl'])
             a_w.post_json(json_obj.get_json())
-            logger.info(json_obj.get_json_str())
-            # print(json_obj.get_json_str())
+            logger.debug(json_obj.get_json_str())
+            logger.info("Data send to {} ..."
+                        .format(ini_obj.data['ApiUrl']))
             ###########################
     else:
         logger.error('Ini file {}: down_sites not defined !!!'.format(str_config))

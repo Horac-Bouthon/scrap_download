@@ -21,7 +21,7 @@ class ApiWrapper:
     def __init__(self, url):
         self.logger = logging.getLogger(api_wrapper.LOGGER_NAME)
         self.url = url
-        self.logger.info('Create: {}'.format(repr(self)))
+        self.logger.debug('Create: {}'.format(repr(self)))
 
     def __repr__(self):
         return "ApiWrapper('{}')"\

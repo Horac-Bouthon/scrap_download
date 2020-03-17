@@ -1,4 +1,5 @@
 import xlrd
+import os
 import logging
 import xlsx_wrapper
 
@@ -13,7 +14,7 @@ class XlsxWrapper:
         self.data = list()
         self.nrows = 0
         self.ncols = 0
-        self.logger.info('Create: {}'.format(repr(self)))
+        self.logger.debug('Create: {}'.format(repr(self)))
 
     def read_file(self, start=0):
         self.logger.debug('Read file: {}'.format(self.file_name))
@@ -31,14 +32,21 @@ class XlsxWrapper:
             self.data.append(add)
         self.nrows = worksheet.nrows
         self.ncols = worksheet.ncols
-        self.logger.info('Read ...done')
+        self.logger.debug('Read ...done')
         self.log_data()
 
+    def close_and_free(self):
+        self.data.clear()
+        if os.path.isfile(self.file_name):
+            os.remove(self.file_name)
+            self.logger.debug('File {} removed.'.format(self.file_name))
+        return
+
     def log_data(self):
-        self.logger.info('xlsx wrapper - data dump')
+        self.logger.debug('xlsx wrapper - data dump')
         for line in self.data:
-            self.logger.info('data line: {}'.format(line))
-        self.logger.info('xlsx wrapper - data dump - done')
+            self.logger.debug('data line: {}'.format(line))
+        self.logger.debug('xlsx wrapper - data dump - done')
 
     def __repr__(self):
         return "XlsxWrapper('{}')".format(self.file_name)
