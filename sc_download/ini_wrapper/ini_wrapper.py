@@ -78,6 +78,14 @@ class IniWrapper:
         else:
             self.data['CronCommand'] = 'python3 main.py'
 
+        if self.config and \
+                ('MAIN' in self.config) and \
+                ('CronId' in self.config['MAIN']):
+            set_value = self.config['MAIN']['CronId'].replace('"', '')
+            self.data['CronId'] = set_value
+        else:
+            self.data['CronId'] = 'sc_download'
+
     def __repr__(self):
         return "IniWrapper('{}')"\
             .format(self.file_name)
